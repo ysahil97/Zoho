@@ -106,6 +106,10 @@ type RescheduleAppointmentData struct {
 	StartTime string `url:"start_time,omitempty"`
 }
 
+type AdditionalFields struct {
+	Address string `json:"Address,omitempty"`
+}
+
 type CustomerDetails struct {
 	Name string `json:"name"`
 	Email string `json:"email"`
@@ -120,6 +124,7 @@ type BookAppointmentData struct {
 	FromTime string `url:"from_time"`
 	TimeZone string `url:"time_zone,omitempty"`
 	Customer_Details CustomerDetails `url:"customer_details,json,omitempty"` // Note the option `json` before `omitempty`, the order shouldn't matter
+	AddFields AdditionalFields `url:additional_fields,json,omitempty`
 }
 
 //AppointmentResponse is the data returned by GetAppointment
