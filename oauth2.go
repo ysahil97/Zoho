@@ -63,6 +63,10 @@ func (z *Zoho) RefreshTokenRequest() (err error) {
 		return ErrTokenInvalidCode
 	}
 
+	if tokenResponse.Error == "invalid_client_secret" {
+		return ErrClientSecretInvalidCode
+	}
+
 	z.oauth.token.AccessToken = tokenResponse.AccessToken
 	z.oauth.token.APIDomain = tokenResponse.APIDomain
 	z.oauth.token.ExpiresIn = tokenResponse.ExpiresIn
@@ -128,6 +132,10 @@ func (z *Zoho) GenerateTokenRequest(clientID, clientSecret, code, redirectURI st
 	//If the tokenResponse is not valid it should not update local tokens
 	if tokenResponse.Error == "invalid_code" {
 		return ErrTokenInvalidCode
+	}
+
+	if tokenResponse.Error == "invalid_client_secret" {
+		return ErrClientSecretInvalidCode
 	}
 
 	z.oauth.clientID = clientID
