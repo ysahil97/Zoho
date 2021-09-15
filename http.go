@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"strings"
+
 	"github.com/ysahil97/go-querystring/query"
 )
 
@@ -37,7 +38,7 @@ const (
 	JSON        = ""
 	JSON_STRING = "jsonString"
 	FILE        = "file"
-	URL                     = "url" // Added new BodyFormat option
+	URL         = "url" // Added new BodyFormat option
 )
 
 // HTTPRequest is the function which actually performs the request to a Zoho endpoint as specified by the provided endpoint
@@ -98,80 +99,79 @@ func (z *Zoho) HTTPRequest(endpoint *Endpoint) (err error) {
 	// 	}
 	// }
 
-       if endpoint.BodyFormat == JSON || endpoint.BodyFormat == JSON_STRING {
-               if endpoint.RequestBody != nil {
-                       // JSON Marshal the body
-                       marshalledBody, err := json.Marshal(endpoint.RequestBody)
-                       if err != nil {
-                               return fmt.Errorf("Failed to create json from request body")
-                       }
-
-                       reqBody = bytes.NewReader(marshalledBody)
-                       contentType = "application/x-www-form-urlencoded; charset=UTF-8"
-                }
-        }
-
-
-		if endpoint.BodyFormat == JSON_STRING || endpoint.BodyFormat == FILE {
-			// Create a multipart form
-			var b bytes.Buffer
-			w := multipart.NewWriter(&b)
-
-			switch endpoint.BodyFormat {
-			case JSON_STRING:
-				// Use the form to create the proper field
-				fw, err := w.CreateFormField("JSONString")
-				if err != nil {
-					return err
-				}
-				// Copy the request body JSON into the field
-				if _, err = io.Copy(fw, reqBody); err != nil {
-					return err
-				}
-
-				// Close the multipart writer to set the terminating boundary
-				err = w.Close()
-				if err != nil {
-					return err
-				}
-
-			case FILE:
-				// Retreive the file contents
-				fileReader, err := os.Open(endpoint.Attachment)
-				if err != nil {
-					return err
-				}
-				defer fileReader.Close()
-				// Create the correct form field
-				part, err := w.CreateFormFile("attachment", filepath.Base(endpoint.Attachment))
-				if err != nil {
-					return err
-				}
-				// copy the file contents to the form
-				if _, err = io.Copy(part, fileReader); err != nil {
-					return err
-				}
-
-				err = w.Close()
-				if err != nil {
-					return err
-				}
+	if endpoint.BodyFormat == JSON || endpoint.BodyFormat == JSON_STRING {
+		if endpoint.RequestBody != nil {
+			// JSON Marshal the body
+			marshalledBody, err := json.Marshal(endpoint.RequestBody)
+			if err != nil {
+				return fmt.Errorf("Failed to create json from request body")
 			}
 
-			reqBody = &b
-			contentType = w.FormDataContentType()
+			reqBody = bytes.NewReader(marshalledBody)
+			contentType = "application/x-www-form-urlencoded; charset=UTF-8"
 		}
+	}
 
-	       // New BodyFormat encoding option
-		if endpoint.BodyFormat == URL {
-			body, err := query.Values(endpoint.RequestBody) // send struct into the newly imported package
+	if endpoint.BodyFormat == JSON_STRING || endpoint.BodyFormat == FILE {
+		// Create a multipart form
+		var b bytes.Buffer
+		w := multipart.NewWriter(&b)
+
+		switch endpoint.BodyFormat {
+		case JSON_STRING:
+			// Use the form to create the proper field
+			fw, err := w.CreateFormField("JSONString")
+			if err != nil {
+				return err
+			}
+			// Copy the request body JSON into the field
+			if _, err = io.Copy(fw, reqBody); err != nil {
+				return err
+			}
+
+			// Close the multipart writer to set the terminating boundary
+			err = w.Close()
 			if err != nil {
 				return err
 			}
 
-			reqBody = strings.NewReader(body.Encode()) // write to body
-			contentType = "application/x-www-form-urlencoded; charset=UTF-8"
+		case FILE:
+			// Retreive the file contents
+			fileReader, err := os.Open(endpoint.Attachment)
+			if err != nil {
+				return err
+			}
+			defer fileReader.Close()
+			// Create the correct form field
+			part, err := w.CreateFormFile("attachment", filepath.Base(endpoint.Attachment))
+			if err != nil {
+				return err
+			}
+			// copy the file contents to the form
+			if _, err = io.Copy(part, fileReader); err != nil {
+				return err
+			}
+
+			err = w.Close()
+			if err != nil {
+				return err
+			}
 		}
+
+		reqBody = &b
+		contentType = w.FormDataContentType()
+	}
+
+	// New BodyFormat encoding option
+	if endpoint.BodyFormat == URL {
+		body, err := query.Values(endpoint.RequestBody) // send struct into the newly imported package
+		if err != nil {
+			return err
+		}
+
+		reqBody = strings.NewReader(body.Encode()) // write to body
+		contentType = "application/x-www-form-urlencoded; charset=UTF-8"
+	}
 
 	req, err = http.NewRequest(string(endpoint.Method), fmt.Sprintf("%s?%s", endpointURL, q.Encode()), reqBody)
 	if err != nil {

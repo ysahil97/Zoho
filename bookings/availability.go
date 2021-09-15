@@ -37,7 +37,7 @@ func (c *API) FetchAvailability(serviceID zoho.Parameter, staffID zoho.Parameter
 
 	err = c.Zoho.HTTPRequest(&endpoint)
 	if err != nil {
-		return AvailabilityResponse{}, fmt.Errorf("Failed to retrieve services: %s", err)
+		return AvailabilityResponse{}, fmt.Errorf("Failed to retrieve availability: %s", err)
 	}
 
 	if v,ok := endpoint.ResponseData.(*AvailabilityResponse); ok {

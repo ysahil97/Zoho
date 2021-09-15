@@ -10,7 +10,6 @@ import (
 	"net/url"
 	"strings"
 	"time"
-
 )
 
 func (z *Zoho) SetRefreshToken(refreshToken string) {
@@ -270,10 +269,10 @@ type ScopeString string
 func BuildScope(service Service, scope Scope, method Method, operation Operation) ScopeString {
 	built := fmt.Sprintf("%s.%s", service, scope)
 	if method != "" {
-	    built += fmt.Sprintf(".%s", method)
+		built += fmt.Sprintf(".%s", method)
 	}
 	if operation != "" {
-	    built += fmt.Sprintf(".%s", operation)
+		built += fmt.Sprintf(".%s", operation)
 	}
 	return ScopeString(built)
 }
