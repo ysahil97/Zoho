@@ -63,6 +63,7 @@ func (z *Zoho) RefreshTokenRequest() (err error) {
 		return ErrTokenInvalidCode
 	}
 
+	//If the tokenResponse is not obtained from proper client secret it should not update local tokens
 	if tokenResponse.Error == "invalid_client_secret" {
 		return ErrClientSecretInvalidCode
 	}
@@ -136,6 +137,7 @@ func (z *Zoho) GenerateTokenRequest(clientID, clientSecret, code, redirectURI st
 		return ErrTokenInvalidCode
 	}
 
+	//If the tokenResponse is not obtained from proper client secret it should not update local tokens
 	if tokenResponse.Error == "invalid_client_secret" {
 		return ErrClientSecretInvalidCode
 	}
