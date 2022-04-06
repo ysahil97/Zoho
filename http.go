@@ -14,7 +14,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/schmorrison/go-querystring/query"
+	"github.com/ysahil97/go-querystring/query"
 )
 
 // Endpoint defines the data required to interact with most Zoho REST api endpoints
@@ -72,6 +72,33 @@ func (z *Zoho) HTTPRequest(endpoint *Endpoint) (err error) {
 	)
 
 	// Has a body, likely a CRUD operation (still possibly JSONString)
+	// if endpoint.RequestBody != nil{
+	//
+	// 	// TODO: Decide whether JSON.marshal is required or not for
+	// 	// Bookings or CRM
+	//
+	// 	// JSON Marshal the body
+	// 	switch v := endpoint.RequestBody.(type) {
+	// 	case url.Values:
+	// 			// body := url.Values{}
+	// 			// for k, val := range v {
+	// 			// 	body.Add(k,val)
+	// 			// }
+	//
+	// 			reqBody = strings.NewReader(v.Encode())
+	// 			fmt.Println(reqBody)
+	// 			contentType = "application/x-www-form-urlencoded; charset=UTF-8"
+	// 		default:
+	// 			marshalledBody, err := json.Marshal(v)
+	// 			if err != nil {
+	// 				return fmt.Errorf("Failed to create json from request body")
+	// 			}
+	//
+	// 			reqBody = bytes.NewBuffer(marshalledBody)
+	// 			contentType = "application/x-www-form-urlencoded; charset=UTF-8"
+	// 	}
+	// }
+
 	if endpoint.BodyFormat == JSON || endpoint.BodyFormat == JSON_STRING {
 		if endpoint.RequestBody != nil {
 			// JSON Marshal the body
