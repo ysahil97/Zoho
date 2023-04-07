@@ -5,27 +5,24 @@ import (
 	"net"
 	"net/http"
 	"time"
-
 	"github.com/hashicorp/go-retryablehttp"
 )
 
 // New initializes a Zoho structure
 func New() *Zoho {
 	retryClient := retryablehttp.NewClient()
-	retryClient.RetryMax = 1
+	retryClient.RetryMax = 3
 	retryClient.HTTPClient = &http.Client{
-		Timeout: time.Second * 10,
-		Transport: &http.Transport{
-			Dial: (&net.Dialer{
-				Timeout: 5 * time.Second,
-			}).Dial,
-			TLSHandshakeTimeout: 5 * time.Second,
-		},
-	}
-
+                        Timeout: time.Second * 10,
+                        Transport: &http.Transport{
+                                Dial: (&net.Dialer{
+                                        Timeout: 5 * time.Second,
+                                }).Dial,
+                                TLSHandshakeTimeout: 5 * time.Second,
+                        },
+                }
 	z := Zoho{
-		client:     retryClient.StandardClient(),
-		ZohoTLD:    "com",
+		client: retryClient.StandardClient(),
 		tokensFile: "./.tokens.zoho",
 		oauth: OAuth{
 			baseURL: "https://accounts.zoho.com/oauth/v2/",
