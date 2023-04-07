@@ -15,6 +15,7 @@ import (
 	"strings"
 
 	"github.com/ysahil97/go-querystring/query"
+//	"github.com/hashicorp/go-retryablehttp"
 )
 
 // Endpoint defines the data required to interact with most Zoho REST api endpoints
@@ -187,6 +188,7 @@ func (z *Zoho) HTTPRequest(endpoint *Endpoint) (err error) {
 	for k, v := range endpoint.Headers {
 		req.Header.Add(k, v)
 	}
+	//req_retry,err := retryablehttp.FromRequest(req)
 
 	resp, err := z.client.Do(req)
 	if err != nil {
